@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursor Snake Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid #000;
+        }
+        .food {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let snake = [{ x: 400, y: 300 }];
+        let food = generateFood();
+        let score = 0;
+
+        document.addEventListener('mousemove', moveSnake);
+
+        function moveSnake(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            snake.unshift({ x, y });
+            while (snake.length > score + 1) {
+                snake.pop();
+            }
+
+            checkFoodCollision();
+            draw();
+        }
+
+        function generateFood() {
+            return {
+                x: Math.floor(Math.random() * (canvas.width - 10)),
+                y: Math.floor(Math.random() * (canvas.height - 10)),
+            };
+        }
+
+        function checkFoodCollision() {
+            const head = snake[0];
+            if (
+                head.x < food.x + 10 && 
+                head.x + 10 > food.x && 
+                head.y < food.y + 10 && 
+                head.y + 10 > food.y
+            ) {
+                score++;
+                food = generateFood();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw snake
+            ctx.fillStyle = 'green';
+            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 10, 10));
+            
+            // Draw food
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x, food.y, 10, 10);
+        }
+    </script>
+</body>
+</html>
